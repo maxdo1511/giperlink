@@ -1,0 +1,5 @@
+exception:
+    customer:
+        not_found: "Клиент не найден!"
+    user:
+        not_found: "Пользователь не найден!"

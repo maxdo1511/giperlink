@@ -1,14 +1,12 @@
 package ru.espada.giperlink.customer.customer_private;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.espada.giperlink.customer.CustomerEntity;
+import ru.espada.giperlink.customer.adress.AddressEntity;
 
 @Data
 @NoArgsConstructor
@@ -19,9 +17,10 @@ import ru.espada.giperlink.customer.CustomerEntity;
 public class CustomerPrivateEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String surname;
-    private String patronymic;
+    @OneToOne
+    @JoinColumn(name = "address")
+    private AddressEntity address;
 
 }

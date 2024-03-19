@@ -1,4 +1,9 @@
-create table contract
+create sequence adress_id_seq
+    as integer;
+
+alter sequence adress_id_seq owner to postgres;
+
+create table if not exists contract
 (
     id                  serial
         constraint contract_pk
@@ -17,7 +22,7 @@ create table contract
 alter table contract
     owner to postgres;
 
-create table customer_service
+create table if not exists customer_service
 (
     id   serial
         constraint customer_service_pk
@@ -30,27 +35,26 @@ create table customer_service
 alter table customer_service
     owner to postgres;
 
-create table customer_hardware
+create table if not exists customer_hardware
 (
     id          serial
         constraint customer_hardware_pk
             primary key,
     hardware_id serial,
-    customer_id serial,
-    contract_id integer not null,
-    constraint customer_hardware_uk_1
-        unique (customer_id, hardware_id, contract_id)
+    contract_id integer not null
+        constraint customer_hardware_contract_id_fk
+            references contract
 );
 
 alter table customer_hardware
     owner to postgres;
 
-create table adress
+create table if not exists address
 (
-    id       serial
+    id       integer default nextval('customer.adress_id_seq'::regclass) not null
         constraint adress_pk
             primary key,
-    country  text not null,
+    country  text                                                        not null,
     city     text,
     district text,
     street   text,
@@ -59,83 +63,65 @@ create table adress
     room     text
 );
 
-alter table adress
+alter table address
     owner to postgres;
 
-create table customer_private
+alter sequence adress_id_seq owned by address.id;
+
+create table if not exists customer_private
 (
-    id                     serial
+    id      serial
         constraint customer_private_pk
             primary key,
-    name                   text    not null,
-    surname                text    not null,
-    patronymic             text,
-    passport_series        integer not null,
-    passport_number        integer not null,
-    passport_date_of_issue bigint  not null,
-    passport_issue_by_whom text    not null,
-    adress                 bigint
+    address bigint
         constraint customer_private_adress_id_fk
-            references adress
+            references address
             on update cascade on delete set null
 );
 
 alter table customer_private
     owner to postgres;
 
-create table customer
+create table if not exists customer
 (
-    id               serial
+    id                   serial
         constraint customer_pk
             primary key,
-    number           text   not null
+    number               text   not null
         constraint customer_pk_2
             unique,
-    contract_id      bigint not null
+    contract_id          bigint not null
         constraint customer_contract_id_fk
             references contract
             on update cascade on delete cascade,
-    personal_account real   not null,
-    customer_id      bigint not null
+    personal_account     real   not null,
+    customer_private_id  bigint not null
         constraint customer_customer_private_id_fk
-            references customer_private
+            references customer_private,
+    customer_hardware_id bigint
+        constraint customer_customer_hardware_id_fk
+            references customer_hardware
 );
 
 alter table customer
     owner to postgres;
 
-create table connected_service
+create table if not exists connected_service
 (
-    id          serial
+    id                  serial
         constraint connected_service_pk
             primary key,
-    customer_id bigint not null
+    customer_id         bigint not null
         constraint connected_service_customer_id_fk
             references customer
             on update cascade on delete cascade,
-    service_id  bigint not null
+    customer_service_id bigint not null
         constraint connected_service_customer_service_id_fk
             references customer_service
             on update cascade on delete cascade
 );
 
 alter table connected_service
-    owner to postgres;
-
-create table history_of_appeals
-(
-    id          serial
-        constraint history_of_appeals_pk
-            primary key,
-    customer_id bigint not null
-        constraint history_of_appeals_customer_id_fk
-            references customer
-            on update cascade,
-    date        bigint not null,
-    topic_id    bigint not null
-);
-
-alter table history_of_appeals
     owner to postgres;
 
 
