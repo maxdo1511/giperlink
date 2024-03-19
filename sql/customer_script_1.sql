@@ -16,7 +16,8 @@ create table if not exists contract
     validity_period     bigint not null,
     date_of_termination bigint,
     termination_reason  text,
-    payment_trems       text   not null
+    payment_trems       text   not null,
+    customer_id         bigint not null
 );
 
 alter table contract
@@ -43,7 +44,8 @@ create table if not exists customer_hardware
     hardware_id serial,
     contract_id integer not null
         constraint customer_hardware_contract_id_fk
-            references contract
+            references contract,
+    customer_id bigint  not null
 );
 
 alter table customer_hardware
@@ -84,18 +86,18 @@ alter table customer_private
 
 create table if not exists customer
 (
-    id                   serial
+    id                   integer not null
         constraint customer_pk
             primary key,
-    number               text   not null
+    number               text    not null
         constraint customer_pk_2
             unique,
-    contract_id          bigint not null
+    contract_id          bigint  not null
         constraint customer_contract_id_fk
             references contract
             on update cascade on delete cascade,
-    personal_account     real   not null,
-    customer_private_id  bigint not null
+    personal_account     real    not null,
+    customer_private_id  bigint  not null
         constraint customer_customer_private_id_fk
             references customer_private,
     customer_hardware_id bigint
@@ -105,6 +107,14 @@ create table if not exists customer
 
 alter table customer
     owner to postgres;
+
+alter table contract
+    add constraint contract_customer_id_fk
+        foreign key (customer_id) references customer;
+
+alter table customer_hardware
+    add constraint customer_hardware_customer_id_fk
+        foreign key (customer_id) references customer;
 
 create table if not exists connected_service
 (

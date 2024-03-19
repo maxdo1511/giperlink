@@ -7,6 +7,7 @@ import ru.espada.giperlink.customer.customer_hardware.CustomerHardwareEntity;
 import ru.espada.giperlink.customer.customer_private.CustomerPrivateEntity;
 import ru.espada.giperlink.user.UserEntity;
 
+import java.util.List;
 import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = true)
@@ -19,18 +20,17 @@ import java.util.Objects;
 public class CustomerEntity extends UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String number;
-    @OneToOne
-    @JoinColumn(name = "contract_id")
-    private ContractEntity contract;
+    @OneToMany(mappedBy = "customer")
+    @Column(name = "contract_id")
+    private List<ContractEntity> contracts;
     private Long personalAccount;
     @OneToOne
     @JoinColumn(name = "customer_private_id")
     private CustomerPrivateEntity customerPrivate;
-    @OneToOne
-    @JoinColumn(name = "customer_hardware_id")
-    private CustomerHardwareEntity customerHardware;
+    @OneToMany(mappedBy = "customer")
+    @Column(name = "customer_hardware_id")
+    private List<CustomerHardwareEntity> customerHardware;
 
 }

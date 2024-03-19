@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.espada.giperlink.customer.CustomerEntity;
 import ru.espada.giperlink.customer.contract.ContractEntity;
 
 @Data
@@ -23,5 +24,8 @@ public class CustomerHardwareEntity {
     @OneToOne
     @JoinColumn(name = "contract_id")
     private ContractEntity contract;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private CustomerEntity customer;
 
 }

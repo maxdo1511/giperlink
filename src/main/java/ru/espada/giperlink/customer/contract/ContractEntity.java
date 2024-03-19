@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.espada.giperlink.customer.CustomerEntity;
 
 @Data
 @NoArgsConstructor
@@ -22,5 +23,8 @@ public class ContractEntity {
     private Long type;
     private Long dateOfTermination;
     private String terminationReason;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private CustomerEntity customer;
 
 }

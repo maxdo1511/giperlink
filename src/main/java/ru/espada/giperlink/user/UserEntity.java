@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.espada.giperlink.customer.CustomerEntity;
 import ru.espada.giperlink.user.user_private.UserPrivateEntity;
 
 @Data

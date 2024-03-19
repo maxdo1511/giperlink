@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.espada.giperlink.customer.controller_models.request.CustomerBaseInfoRequest;
+import ru.espada.giperlink.customer.controller_models.request.CustomerFullInfoRequest;
+import ru.espada.giperlink.customer.controller_models.request.CustomerShortInfoRequest;
 import ru.espada.giperlink.customer.controller_models.request.RemovePageSessionRequest;
 
 /**
@@ -46,6 +48,39 @@ public class CustomerController {
     @GetMapping("/get-base-infos")
     public ResponseEntity<?> getBaseInfos(@Valid @RequestBody CustomerBaseInfoRequest request) {
         return customerService.getBaseInfos(request);
+    }
+
+    /**
+    * Получает упрощенную информацию о клиенте по запросу.
+    *
+    * @param  request   объект CustomerShortInfoRequest, содержащий необходимую информацию
+    * @return          ResponseEntity с упрощенной информацией о клиенте
+    */
+    @GetMapping("/get-short-info")
+    public ResponseEntity<?> getShortInfo(@Valid @RequestBody CustomerShortInfoRequest request) {
+        return customerService.getShortInfo(request);
+    }
+
+    /**
+    * Получает упрощенную информацию о клиентах по запросу.
+    *
+    * @param  request   объект CustomerShortInfoRequest, содержащий необходимую информацию
+    * @return          ResponseEntity с упрощенной информацией о клиентах
+    */
+    @GetMapping("/get-short-infos")
+    public ResponseEntity<?> getShortInfos(@Valid @RequestBody CustomerShortInfoRequest request) {
+        return customerService.getShortInfos(request);
+    }
+
+    /**
+    * Получает полную информацию о клиенте по запросу.
+    *
+    * @param  request   объект CustomerFullInfoRequest, содержащий необходимую информацию
+    * @return          ResponseEntity с полной информацией о клиенте
+    */
+    @GetMapping("get-full-info")
+    public ResponseEntity<?> getFullInfo(@Valid @RequestBody CustomerFullInfoRequest request) {
+        return customerService.getFullInfo(request);
     }
 
     /**
