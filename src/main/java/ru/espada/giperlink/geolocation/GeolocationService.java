@@ -20,7 +20,7 @@ import java.util.Map;
 public class GeolocationService {
 
     private List<CityModel> cityModels;
-    private static final String FILE_PATH = "special_data/cities.yaml";
+    private static final String FILE_PATH = "special_data/cities.json";
 
     public GeolocationService() {
         loadCities();
