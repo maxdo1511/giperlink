@@ -1,4 +1,4 @@
-package ru.espada.giperlink.customer.connected_service;
+package ru.espada.giperlink.customer.customer_info.connected_service;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,9 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.espada.giperlink.customer.CustomerEntity;
-import ru.espada.giperlink.customer.customer_service.CustomerServiceEntity;
-
-import java.util.List;
+import ru.espada.giperlink.customer.customer_info.customer_service.CustomerServiceEntity;
 
 @Data
 @AllArgsConstructor

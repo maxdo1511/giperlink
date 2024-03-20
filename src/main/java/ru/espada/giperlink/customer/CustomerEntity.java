@@ -2,13 +2,13 @@ package ru.espada.giperlink.customer;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.espada.giperlink.customer.contract.ContractEntity;
-import ru.espada.giperlink.customer.customer_hardware.CustomerHardwareEntity;
-import ru.espada.giperlink.customer.customer_private.CustomerPrivateEntity;
+import ru.espada.giperlink.customer.annotation.CustomerSearchFiled;
+import ru.espada.giperlink.customer.customer_info.contract.ContractEntity;
+import ru.espada.giperlink.customer.customer_info.customer_hardware.CustomerHardwareEntity;
+import ru.espada.giperlink.customer.customer_info.customer_private.CustomerPrivateEntity;
 import ru.espada.giperlink.user.UserEntity;
 
 import java.util.List;
-import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -25,6 +25,7 @@ public class CustomerEntity extends UserEntity {
     @OneToMany(mappedBy = "customer")
     @Column(name = "contract_id")
     private List<ContractEntity> contracts;
+    @CustomerSearchFiled(many = true)
     private Long personalAccount;
     @OneToOne
     @JoinColumn(name = "customer_private_id")

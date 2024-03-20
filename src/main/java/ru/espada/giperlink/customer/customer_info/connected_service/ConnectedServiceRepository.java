@@ -1,4 +1,4 @@
-package ru.espada.giperlink.customer.connected_service;
+package ru.espada.giperlink.customer.customer_info.connected_service;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

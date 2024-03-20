@@ -1,4 +1,4 @@
-package ru.espada.giperlink.customer.customer_hardware;
+package ru.espada.giperlink.customer.customer_info.customer_hardware;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

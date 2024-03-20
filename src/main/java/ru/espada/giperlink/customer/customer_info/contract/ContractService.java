@@ -1,8 +1,6 @@
-package ru.espada.giperlink.customer.contract;
+package ru.espada.giperlink.customer.customer_info.contract;
 
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ContractService {

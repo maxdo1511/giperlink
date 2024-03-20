@@ -1,15 +1,14 @@
 package ru.espada.giperlink.customer.controller_models.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class CustomerBaseInfoResponse {
+@SuperBuilder
+public class CustomerBaseInfoResponse extends AbstractCustomerInfoResponse {
 
     private long id;
     private String name;

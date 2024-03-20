@@ -1,4 +1,4 @@
-package ru.espada.giperlink.customer.connected_service;
+package ru.espada.giperlink.customer.customer_info.connected_service;
 
 import org.springframework.stereotype.Service;
 

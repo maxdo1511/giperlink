@@ -1,4 +1,4 @@
-package ru.espada.giperlink.customer;
+package ru.espada.giperlink.customer.config;
 
 import lombok.Data;
 import lombok.Getter;

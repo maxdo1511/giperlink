@@ -4,18 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import ru.espada.giperlink.appeal.AppealService;
-import ru.espada.giperlink.customer.connected_service.ConnectedServiceEntity;
-import ru.espada.giperlink.customer.connected_service.ConnectedServiceService;
-import ru.espada.giperlink.customer.contract.ContractEntity;
-import ru.espada.giperlink.customer.controller_models.request.CustomerBaseInfoRequest;
-import ru.espada.giperlink.customer.controller_models.request.CustomerFullInfoRequest;
-import ru.espada.giperlink.customer.controller_models.request.CustomerShortInfoRequest;
-import ru.espada.giperlink.customer.controller_models.request.RemovePageSessionRequest;
+import ru.espada.giperlink.customer.config.CustomerServiceConfig;
+import ru.espada.giperlink.customer.controller_models.request.*;
+import ru.espada.giperlink.customer.customer_info.connected_service.ConnectedServiceEntity;
+import ru.espada.giperlink.customer.customer_info.connected_service.ConnectedServiceService;
 import ru.espada.giperlink.customer.controller_models.response.CustomerBaseInfoResponse;
 import ru.espada.giperlink.customer.controller_models.response.CustomerFullInfoResponse;
 import ru.espada.giperlink.customer.controller_models.response.CustomerShortInfoResponse;
+import ru.espada.giperlink.customer.exception.CustomerException;
+import ru.espada.giperlink.customer.util_service.CustomerFilterService;
+import ru.espada.giperlink.customer.util_service.CustomerFindService;
 import ru.espada.giperlink.geolocation.GeolocationService;
 import ru.espada.giperlink.user.UserEntity;
 import ru.espada.giperlink.user.UserException;
@@ -24,6 +23,7 @@ import ru.espada.giperlink.user.UserService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author espada
@@ -41,6 +41,8 @@ public class CustomerService {
     private final GeolocationService geolocationService;
     private final ConnectedServiceService connectedServiceService;
     private final AppealService appealService;
+    private final CustomerFilterService customerFilterService;
+    private final CustomerFindService customerFindService;
     /**
      * Поле содержит активные сессии зпросов пользователей из бд
      * Ключ - id запросов (0 - base info, 1 - short info)
@@ -55,13 +57,17 @@ public class CustomerService {
                            CustomerServiceConfig customerServiceConfig,
                            GeolocationService geolocationService,
                            ConnectedServiceService connectedServiceService,
-                           AppealService appealService) {
+                           AppealService appealService,
+                           CustomerFilterService customerFilterService,
+                           CustomerFindService customerFindService) {
         this.customerRepository = customerRepository;
         this.userService = userService;
         this.customerServiceConfig = customerServiceConfig;
         this.geolocationService = geolocationService;
         this.connectedServiceService = connectedServiceService;
         this.appealService = appealService;
+        this.customerFilterService = customerFilterService;
+        this.customerFindService = customerFindService;
 
         // инициализация активных сессий
         activePageSessions = new HashMap<>();
@@ -76,10 +82,10 @@ public class CustomerService {
      */
     public ResponseEntity<CustomerBaseInfoResponse> getBaseInfo(CustomerBaseInfoRequest request) throws UserException {
         UserEntity user = userService.getUserById(request.getUserId(), request.getLang());
-
         return ResponseEntity
                 .ok()
                 .body(CustomerBaseInfoResponse.builder()
+                        .active(isCustomerActive(user.getId()))
                         .id(user.getId())
                         .name(user.getUserPrivate().getName())
                         .surname(user.getUserPrivate().getSurname())
@@ -92,18 +98,21 @@ public class CustomerService {
      * @return базовая информация о клиентах (id, ФИО)
      * @throws ru.espada.giperlink.user.UserException исключение при отсутствии пользователя
      */
-    public ResponseEntity<List<CustomerBaseInfoResponse>> getBaseInfos(CustomerBaseInfoRequest request) throws UserException {
+    public ResponseEntity<List<?>> getBaseInfos(CustomerBaseInfoRequest request) throws UserException {
         int page = updatePageSession(0, request.getUserId());
         List<UserEntity> users = userService.getUsers(request.getLang(), page, customerServiceConfig.getPageSize());
-        return ResponseEntity
-                .ok()
-                .body(users.stream().map(user -> CustomerBaseInfoResponse.builder()
+        List<CustomerBaseInfoResponse> customerBaseInfoResponses = users.stream().map(user -> CustomerBaseInfoResponse.builder()
+                        .active(isCustomerActive(user.getId()))
                         .id(user.getId())
                         .name(user.getUserPrivate().getName())
                         .surname(user.getUserPrivate().getSurname())
                         .patronymic(user.getUserPrivate().getPatronymic())
                         .build())
-                        .toList());
+                .collect(Collectors.toList());
+        customerFilterService.filterUsers(customerBaseInfoResponses, request.getFilters());
+        return ResponseEntity
+                .ok()
+                .body(customerBaseInfoResponses);
     }
 
     /**
@@ -115,6 +124,7 @@ public class CustomerService {
         return ResponseEntity
                 .ok()
                 .body(CustomerShortInfoResponse.builder()
+                        .active(isCustomerActive(customer))
                         .id(customer.getId())
                         .number(buildCustomerNumber(customer))
                         .name(customer.getUserPrivate().getName())
@@ -130,12 +140,11 @@ public class CustomerService {
      * @param request запрос из API
      * @return краткая информация о клиентах (id, номер, ФИО, договор, лицевой счёт, подключенные сервисы)
      */
-    public ResponseEntity<List<CustomerShortInfoResponse>> getShortInfos(CustomerShortInfoRequest request) {
+    public ResponseEntity<List<?>> getShortInfos(CustomerShortInfoRequest request) {
         int page = updatePageSession(1, request.getId());
         List<CustomerEntity> customers = getCustomers(page, customerServiceConfig.getPageSize());
-        return ResponseEntity
-                .ok()
-                .body(customers.stream().map(user -> CustomerShortInfoResponse.builder()
+        List<CustomerShortInfoResponse> customerShortInfoResponses = customers.stream().map(user -> CustomerShortInfoResponse.builder()
+                        .active(isCustomerActive(user))
                         .id(user.getId())
                         .number(buildCustomerNumber(user))
                         .name(user.getUserPrivate().getName())
@@ -145,7 +154,11 @@ public class CustomerService {
                         .personalAccount(user.getPersonalAccount())
                         .connectedServices(buildCustomerConnectedServices(user))
                         .build())
-                        .toList());
+                .collect(Collectors.toList());
+        customerFilterService.filterUsers(customerShortInfoResponses, request.getFilters());
+        return ResponseEntity
+                .ok()
+                .body(customerShortInfoResponses);
     }
 
     /**
@@ -157,9 +170,23 @@ public class CustomerService {
         return ResponseEntity
                 .ok()
                 .body(CustomerFullInfoResponse.builder()
+                        .active(isCustomerActive(customer))
                         .customer(customer)
                         .appealList(appealService.getAllUserAppeals12Month(customer))
                         .build());
+    }
+
+    /**
+     * Получает полную информацию о клиентах по значению поля.
+     * Поле должно быть помечено аннотацией {@link ru.espada.giperlink.customer.annotation.CustomerSearchFiled}
+     * и класс содержащий поле должен быть наследником или наследником наследника {@link ru.espada.giperlink.user.UserEntity}
+     * @param request объект содержащий информацию поиска
+     * @return ResponseEntity где body - список полной информации о клиентах
+     */
+    public ResponseEntity<?> getCustomersByField(CustomerFullInfoByFieldInfoRequest request) {
+        return ResponseEntity
+                .ok()
+                .body(customerFindService.findAllCustomersByField(request.getField(), request.getValue()));
     }
 
     public void removePageSession(RemovePageSessionRequest request) {
@@ -167,7 +194,7 @@ public class CustomerService {
         activePageSessions.get(1).remove(request.getUserId());
     }
 
-    public List<CustomerEntity> getCustomers(int pageNumber, int pageSize) {
+    private List<CustomerEntity> getCustomers(int pageNumber, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
         return customerRepository.findAll(pageRequest).toList();
     }
@@ -183,6 +210,26 @@ public class CustomerService {
             activePageSessions.get(requestType).put(userId, 0);
         }
         return activePageSessions.get(requestType).get(userId);
+    }
+
+    /**
+     * Проверяет активен ли клиент (клиент счтитается активным, когда хотябы один договор не закрыт)
+     * @param id id клиента
+     * @return статус активности
+     */
+    private boolean isCustomerActive(long id) {
+        return customerRepository
+                .findById(id).orElseThrow(() -> new CustomerException("exception.customer.not_found"))
+                .getContracts().stream().anyMatch(contract -> contract.getDateOfTermination() == null);
+    }
+
+    /**
+     * Проверяет активен ли клиент (клиент счтитается активным, когда хотябы один договор не закрыт)
+     * @param customer клиент
+     * @return статус активности
+     */
+    private boolean isCustomerActive(CustomerEntity customer) {
+        return customer.getContracts().stream().anyMatch(contract -> contract.getDateOfTermination() == null);
     }
 
     private String buildCustomerNumber(CustomerEntity customer) {

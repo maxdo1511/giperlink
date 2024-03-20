@@ -1,4 +1,4 @@
-package ru.espada.giperlink.customer.adress;
+package ru.espada.giperlink.customer.customer_info.adress;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.espada.giperlink.customer.controller_models.request.CustomerBaseInfoRequest;
-import ru.espada.giperlink.customer.controller_models.request.CustomerFullInfoRequest;
-import ru.espada.giperlink.customer.controller_models.request.CustomerShortInfoRequest;
-import ru.espada.giperlink.customer.controller_models.request.RemovePageSessionRequest;
+import ru.espada.giperlink.customer.controller_models.request.*;
 
 /**
  * @author espada
@@ -81,6 +78,17 @@ public class CustomerController {
     @GetMapping("get-full-info")
     public ResponseEntity<?> getFullInfo(@Valid @RequestBody CustomerFullInfoRequest request) {
         return customerService.getFullInfo(request);
+    }
+
+    /**
+    * Получает полную информацию о клиентах по запросу.
+    *
+    * @param  request   объект CustomerFullInfoRequest, содержащий необходимую информацию
+    * @return          ResponseEntity с полной информацией о клиентах
+    */
+    @GetMapping("get-customers-by-field")
+    public ResponseEntity<?> getCustomersByField(@Valid @RequestBody CustomerFullInfoByFieldInfoRequest request) {
+        return customerService.getCustomersByField(request);
     }
 
     /**

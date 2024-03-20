@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.espada.giperlink.customer.annotation.CustomerSearchFiled;
 
 @Data
 @AllArgsConstructor
@@ -19,6 +20,7 @@ public class UserPrivateEntity {
     private Long id;
 
     private String name;
+    @CustomerSearchFiled(many = true)
     private String surname;
     private String patronymic;
     private int passportSeries;

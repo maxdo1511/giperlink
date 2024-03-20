@@ -1,4 +1,4 @@
-package ru.espada.giperlink.customer.customer_hardware;
+package ru.espada.giperlink.customer.customer_info.contract;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,24 +6,23 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.espada.giperlink.customer.CustomerEntity;
-import ru.espada.giperlink.customer.contract.ContractEntity;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(schema = "customer", name = "customer_hardware")
-public class CustomerHardwareEntity {
+@Table(schema = "customer", name = "contract")
+public class ContractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private long hardwareId;
-    @OneToOne
-    @JoinColumn(name = "contract_id")
-    private ContractEntity contract;
+    private String contractNumber;
+    private Long dateOfIssue;
+    private Long type;
+    private Long dateOfTermination;
+    private String terminationReason;
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private CustomerEntity customer;

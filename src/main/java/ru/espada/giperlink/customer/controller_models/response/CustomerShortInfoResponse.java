@@ -1,18 +1,17 @@
 package ru.espada.giperlink.customer.controller_models.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import ru.espada.giperlink.customer.contract.ContractEntity;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import ru.espada.giperlink.customer.customer_info.contract.ContractEntity;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class CustomerShortInfoResponse {
+@SuperBuilder
+public class CustomerShortInfoResponse extends AbstractCustomerInfoResponse {
 
     private Long id;
     private String number;

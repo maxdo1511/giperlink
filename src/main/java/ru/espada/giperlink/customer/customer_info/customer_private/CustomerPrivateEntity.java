@@ -1,12 +1,11 @@
-package ru.espada.giperlink.customer.customer_private;
+package ru.espada.giperlink.customer.customer_info.customer_private;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.espada.giperlink.customer.CustomerEntity;
-import ru.espada.giperlink.customer.adress.AddressEntity;
+import ru.espada.giperlink.customer.customer_info.adress.AddressEntity;
 
 @Data
 @NoArgsConstructor

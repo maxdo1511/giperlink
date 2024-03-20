@@ -1,20 +1,18 @@
 package ru.espada.giperlink.customer.controller_models.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import ru.espada.giperlink.appeal.appeal.AppealEntity;
 import ru.espada.giperlink.customer.CustomerEntity;
-import ru.espada.giperlink.customer.contract.ContractEntity;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class CustomerFullInfoResponse {
+@SuperBuilder
+public class CustomerFullInfoResponse extends AbstractCustomerInfoResponse {
 
     private CustomerEntity customer;
     private List<AppealEntity> appealList;

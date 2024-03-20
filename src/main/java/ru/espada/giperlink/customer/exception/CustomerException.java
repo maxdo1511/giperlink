@@ -1,4 +1,4 @@
-package ru.espada.giperlink.customer;
+package ru.espada.giperlink.customer.exception;
 
 
 import lombok.Data;
