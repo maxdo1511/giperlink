@@ -3,6 +3,7 @@ package ru.espada.giperlink.customer.util_service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.espada.giperlink.customer_module.customer.util_service.CustomerFindService;
 
 import java.util.List;
 
