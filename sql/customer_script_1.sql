@@ -41,7 +41,9 @@ create table if not exists customer_hardware
     id          serial
         constraint customer_hardware_pk
             primary key,
-    hardware_id serial,
+    hardware_id serial
+        constraint customer_hardware_hardware_id_fk
+            references hardware.hardware,
     contract_id integer not null
         constraint customer_hardware_contract_id_fk
             references contract,
@@ -107,10 +109,6 @@ create table if not exists customer
 
 alter table customer
     owner to postgres;
-
-alter table contract
-    add constraint contract_customer_id_fk
-        foreign key (customer_id) references customer;
 
 alter table customer_hardware
     add constraint customer_hardware_customer_id_fk
